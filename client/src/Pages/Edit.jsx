@@ -11,38 +11,24 @@ export default function Edit() {
     class: "",
     age: "",
   });
-  // useEffect(() => {
-  //   const getAllData = async () => {
-  //     const res = await axios.get(
-  //       `http://localhost:9000/api/v1/users/single/${id}`
-  //     );
-  //     setInput(res.data);
-  //   };
-  //   getAllData();
-  // }, [id]);
-
-  // const handleEditData = async (e) => {
-  //   e.preventDefault();
-
-  //   await axios.put(`http://localhost:9000/api/v1/users/${id}`, input);
-  //   navigate("/");
-  // };
+  
+const API = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const getAllData = async () => {
       const res = await axios.get(
-        `http://localhost:3002/students/${id}`
+        `${API}/students/${id}`
       );
       setInput(res.data);
     };
     getAllData();
-  }, [id]);
+  }, [id,API]);
 
 
 
   const handleEditData = async (e) => {
     e.preventDefault();
-  await axios.put(`http://localhost:3002/students/${id}`, input);
+  await axios.put(`${API}/students/${id}`, input);
     navigate("/");
   };
 
