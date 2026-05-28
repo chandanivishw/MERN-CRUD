@@ -19,9 +19,11 @@ export default function Home() {
       const res = await axios.get(`${API}/students`);
       setStudents(res.data);
     };
-
-    getAllData();
-  }, [render]);
+ if(API){
+ getAllData();
+ }
+   
+  }, [render,API]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,9 +32,9 @@ export default function Home() {
 
     setRender(!render);
     setInput({
-      name: " ",
-      class: " ",
-      age: " ",
+      name: "",
+      class: "",
+      age: "",
     });
   };
 
