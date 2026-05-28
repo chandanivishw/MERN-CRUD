@@ -2,22 +2,27 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+const API = process.env.REACT_APP_API_URL;
+
 export default function Home() {
   const [students, setStudents] = useState([]);
   const [render, setRender] = useState(false);
+  const [error, setError] = useState(null);
   const [input, setInput] = useState({
     name: " ",
     class: " ",
     age: " ",
   });
 
-  // ✅ API URL from env
-  const API = process.env.REACT_APP_API_URL;
-
   useEffect(() => {
     const getAllData = async () => {
-      const res = await axios.get(`${API}/students`);
-      setStudents(res.data);
+      try {
+        const res = await axios.get(`${API}/students`);
+        setStudents(res.data);
+        setError(null);
+      } catch (err) {
+        setError(err.response?.data?.error || "Failed to load students. Please check that MONGO_URI is set in Netlify environment variables.");
+      }
     };
 
     getAllData();
@@ -25,25 +30,25 @@ export default function Home() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    await axios.post(`${API}/students`, input);
-
-    setRender(!render);
-    setInput({
-      name: " ",
-      class: " ",
-      age: " ",
-    });
+    try {
+      await axios.post(`${API}/students`, input);
+      setRender(!render);
+      setInput({ name: " ", class: " ", age: " " });
+      setError(null);
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to add student. Please check your database connection.");
+    }
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`${API}/students/${id}`);
-
-    const newStudents = students.filter((item) => {
-      return item._id !== id;
-    });
-
-    setStudents(newStudents);
+    try {
+      await axios.delete(`${API}/students/${id}`);
+      const newStudents = students.filter((item) => item._id !== id);
+      setStudents(newStudents);
+      setError(null);
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to delete student.");
+    }
   };
 
   return (
@@ -56,6 +61,14 @@ export default function Home() {
             </h1>
           </div>
         </div>
+
+        {error && (
+          <div className="col-md-12">
+            <div className="alert alert-danger mt-3" role="alert">
+              <strong>Error:</strong> {error}
+            </div>
+          </div>
+        )}
 
         <div className="col-md-6">
           <form onSubmit={handleSubmit}>
