@@ -1,9 +1,11 @@
 import express from 'express';
 import connection from './database/db.js';
 import StudentsData from './models/students.js';
+import dotenv from 'dotenv';
+dotenv.config();
 import cors from 'cors';
 const app = express();
-const port = 3002;
+const port = process.env.PORT || 3002;
 app.get('/',(req,res)=>{
     res.send("Hey Students")
 })
