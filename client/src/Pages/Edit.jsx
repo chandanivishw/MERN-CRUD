@@ -1,37 +1,47 @@
-import React, { useState,  useEffect } from "react";
-import {useParams ,useNavigate} from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-export default function Edit() {
 
+const API = process.env.REACT_APP_API_URL;
+
+export default function Edit() {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  const [error, setError] = useState(null);
   const [input, setInput] = useState({
     name: "",
     class: "",
     age: "",
   });
-  
-const API = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const getAllData = async () => {
-      const res = await axios.get(
-        `${API}/students/${id}`
-      );
-      setInput(res.data);
+      try {
+        const res = await axios.get(`${API}/students/${id}`);
+        setInput(res.data);
+        setError(null);
+      } catch (err) {
+        setError(
+          err.response?.data?.error ||
+            "Failed to load student. Please check your database connection."
+        );
+      }
     };
     getAllData();
-  }, [id,API]);
-
-
+  }, [id]);
 
   const handleEditData = async (e) => {
     e.preventDefault();
-  await axios.put(`${API}/students/${id}`, input);
-    navigate("/");
+    try {
+      await axios.put(`${API}/students/${id}`, input);
+      navigate("/");
+    } catch (err) {
+      setError(
+        err.response?.data?.error ||
+          "Failed to update student. Please check your database connection."
+      );
+    }
   };
-
 
   return (
     <div>
@@ -42,6 +52,15 @@ const API = process.env.REACT_APP_API_URL;
               <h1 className="text-white text-center mt-3">UPDATE</h1>
             </div>
           </div>
+
+          {error && (
+            <div className="col-md-12">
+              <div className="alert alert-danger mt-3" role="alert">
+                <strong>Error:</strong> {error}
+              </div>
+            </div>
+          )}
+
           <div className="col-md-12">
             <form onSubmit={handleEditData}>
               <div className="mb-3">
@@ -57,7 +76,6 @@ const API = process.env.REACT_APP_API_URL;
                   onChange={(e) =>
                     setInput({ ...input, [e.target.name]: e.target.value })
                   }
-
                 />
               </div>
               <div className="mb-3">
@@ -87,19 +105,23 @@ const API = process.env.REACT_APP_API_URL;
                   value={input.age}
                   onChange={(e) =>
                     setInput({ ...input, [e.target.name]: e.target.value })
-                  } 
-
+                  }
                 />
               </div>
               <div className="mb-3">
-                <button type="submit" className="btn btn-primary ">
+                <button type="submit" className="btn btn-primary">
                   Update
                 </button>
               </div>
             </form>
           </div>
         </div>
-        <button onClick={() => navigate("/")} className="col-md-12 btn btn-info mt-2">Go To Home</button>
+        <button
+          onClick={() => navigate("/")}
+          className="col-md-12 btn btn-info mt-2"
+        >
+          Go To Home
+        </button>
       </div>
     </div>
   );

@@ -1,0 +1,14 @@
+[build]
+  command = "npm install && cd client && npm install && npm run build"
+  publish = "client/build"
+
+[build.environment]
+  REACT_APP_API_URL = "/api"
+
+[functions]
+  directory = "netlify/functions"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
