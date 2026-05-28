@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {Link} from 'react-router-dom'
+import { Link } from "react-router-dom";
 
 export default function Home() {
   const [students, setStudents] = useState([]);
@@ -10,66 +10,41 @@ export default function Home() {
     class: " ",
     age: " ",
   });
-  //  useEffect(() => {
-  //   const getAllData = async () => {
-  //     const res = await axios.get("http://localhost:9000/api/v1/users");
-  //     setUsers(res.data);
-  //   };
-  //   getAllData();
-  // }, [render]);
+
+  // ✅ API URL from env
+  const API = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const getAllData = async () => {
-      // try{
-        const res = await axios.get("http://localhost:3002/students");
-        setStudents(res.data);
-      //   }catch(error){
-      //   console.log(error)
-      // }
-      };
-     
-    getAllData();
-  
-  }, [render]);
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
+      const res = await axios.get(`${API}/students`);
+      setStudents(res.data);
+    };
 
-//  await axios.post("http://localhost:9000/api/v1/users", input);
-//     setRender(true);
-//     setInput({
-//         name: "",
-//         email: "",
-//         age: "",
-//     });
- 
-// };
+    getAllData();
+  }, [render]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post("http://localhost:3002/students", input);
- 
-    setRender(true);
+
+    await axios.post(`${API}/students`, input);
+
+    setRender(!render);
     setInput({
-      name:" ",
-      class:" ",
+      name: " ",
+      class: " ",
       age: " ",
-  });
-  };
-
-
-  const handleDelete = async (id)=>{
-
-    await axios.delete(`http://localhost:3002/students/${id}`);
-
-    const newStudents = students.filter((item)=>{
-        return item._id !== id ;
     });
-    setStudents(newStudents);
-
   };
 
+  const handleDelete = async (id) => {
+    await axios.delete(`${API}/students/${id}`);
 
+    const newStudents = students.filter((item) => {
+      return item._id !== id;
+    });
 
+    setStudents(newStudents);
+  };
 
   return (
     <div className="container">
@@ -81,62 +56,54 @@ export default function Home() {
             </h1>
           </div>
         </div>
+
         <div className="col-md-6">
           <form onSubmit={handleSubmit}>
-          {/* {input.name} */}
             <div className="mb-3">
-              <label htmlFor="name" className="form-label">
-                Name
-              </label>
+              <label className="form-label">Name</label>
               <input
                 type="text"
                 className="form-control"
-                id="name"
                 name="name"
                 value={input.name}
                 onChange={(e) =>
                   setInput({ ...input, [e.target.name]: e.target.value })
                 }
-             
-             required />
-
+                required
+              />
             </div>
-      <div className="mb-3">
-              <label htmlFor="class" className="form-label">
-                Class
-              </label>
+
+            <div className="mb-3">
+              <label className="form-label">Class</label>
               <input
                 type="number"
                 className="form-control"
-                id="class"
                 name="class"
                 value={input.class}
                 onChange={(e) =>
                   setInput({ ...input, [e.target.name]: e.target.value })
                 }
-           required   />
+                required
+              />
             </div>
 
             <div className="mb-3">
-              <label htmlFor="age" className="form-label">
-                Age
-              </label>
+              <label className="form-label">Age</label>
               <input
                 type="number"
                 className="form-control"
-                id="age"
                 name="age"
                 value={input.age}
                 onChange={(e) =>
                   setInput({ ...input, [e.target.name]: e.target.value })
                 }
-             required />
+                required
+              />
             </div>
-            <div className="mb-3">
-              <button type="submtit" className="btn btn-primary">
-                Submit
-              </button>
-            </div>
+
+            <button type="submit" className="btn btn-primary">
+              Submit
+            </button>
           </form>
         </div>
 
@@ -144,64 +111,42 @@ export default function Home() {
           <table className="table">
             <thead>
               <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Class</th>
-                <th scope="col">Age</th>
-                <th scope="col"> Edit</th>
-                <th scope="col">Delete</th>
+                <th>Name</th>
+                <th>Class</th>
+                <th>Age</th>
+                <th>Edit</th>
+                <th>Delete</th>
               </tr>
             </thead>
-            {/* <tbody>
-              {students &&
-                students.map((student) => {
-                  return (
-                    <tr key={student._id}>
-                      <td>{student.name}</td>
-                      <td>{student.class}</td>
-                      <td>{student.age}</td>
 
-                      <td>
-                      <Link to={`/edit/${student._id}`}>
-                            <button className="btn btn-primary">Edit</button>
-                          </Link>
-                    
-                      </td>
-                      <td>
-                        <button  onClick={()=>handleDelete(student._id)}  className="btn btn-danger">Delete</button>
-                      </td>
-                    </tr>
-                  );
-                })}
-            </tbody> */}
+            <tbody>
+              {students.map((student) => (
+                <tr key={student._id}>
+                  <td>{student.name}</td>
+                  <td>{student.class}</td>
+                  <td>{student.age}</td>
 
-<tbody>
-                {students &&
-                  students.map((student) => {
-                    return (
-                      <tr key={student._id}>
-                        <td>{student.name}</td>
-                        <td>{student.class}</td>
-                        <td>{student.age}</td>
-                        <td>
-                      
-                        <Link to={`/edit/${student._id}`}>
-                            <button className="btn btn-primary">Edit</button>
-                          </Link>
-                        </td>
-                        <td>
-                          <button onClick={()=>handleDelete(student._id)} className="btn btn-danger">Delete</button>
-                        </td>
-                      </tr>
-                    );
-                  })
-                  }
-              </tbody>
+                  <td>
+                    <Link to={`/edit/${student._id}`}>
+                      <button className="btn btn-primary">Edit</button>
+                    </Link>
+                  </td>
 
-
-
+                  <td>
+                    <button
+                      onClick={() => handleDelete(student._id)}
+                      className="btn btn-danger"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
       </div>
     </div>
   );
 }
+
